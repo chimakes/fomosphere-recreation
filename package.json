@@ -1,0 +1,22 @@
+{
+  "name": "chimakes-threejs-starter",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "keywords": [],
+  "author": "Chimakes",
+  "dependencies": {
+    "lil-gui": "^0.21.0",
+    "three": "^0.181.2",
+    "three-custom-shader-material": "5.4",
+    "vite": "^7.2.6"
+  },
+  "devDependencies": {
+    "vite-plugin-glsl": "^1.5.5",
+    "vite-plugin-restart": "^1.0.0"
+  }
+}
