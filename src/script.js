@@ -1,12 +1,11 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 import GUI from 'lil-gui'
-import testVertexShader from './shaders/test/vertex.glsl'
-import testFragmentShader from './shaders/test/fragment.glsl'
-
-console.log(CustomShaderMaterial)
+import fomosphereVertexShader from './shaders/fomosphere/vertex.glsl'
+import fomosphereFragmentShader from './shaders/fomosphere/fragment.glsl'
 
 const gui = new GUI({ width: 340 })
 const debugObject = {}
@@ -50,16 +49,53 @@ renderer.setPixelRatio(sizes.pixelRatio)
 
 
 /**
- * Project
+ * Fomosphere
  */
+const uniforms = {
+    uTime: new THREE.Uniform(0),
+    uPositionFrequency: new THREE.Uniform(0.38),
+    uTimeFrequency: new THREE.Uniform(0.4),
+    uStrength: new THREE.Uniform(0.5),
+}
+
 // sphere
-const geometry = new THREE.IcosahedronGeometry(2.5, 50)
-const material = new THREE.MeshStandardMaterial({
-    metalness: 0,
-    roughness: 0.5,
+let geometry = new THREE.IcosahedronGeometry(2.5, 50)
+geometry = mergeVertices(geometry)
+geometry.computeTangents()
+// console.log(geometry.attributes)
+
+const material = new CustomShaderMaterial({
+    // CSM
+    baseMaterial: THREE.MeshStandardMaterial,
+    vertexShader: fomosphereVertexShader,
+    fragmentShader: fomosphereFragmentShader,
+    uniforms: uniforms,
+
+    // MeshStandardMaterial
+    metalness: 0.9,
+    roughness: 0.55,
     color: '#ffffff'
 })
+const depthMaterial = new CustomShaderMaterial({
+    // CSM
+    baseMaterial: THREE.MeshDepthMaterial,
+    vertexShader: fomosphereVertexShader,
+    uniforms: uniforms,
+
+    // MeshDepthMaterial for shadow
+    depthPacking: THREE.RGBADepthPacking
+})
+
+// material tweak debug
+gui.add(material, 'metalness', 0, 1, 0.001)
+gui.add(material, 'roughness', 0, 1, 0.001)
+
+gui.add(uniforms.uPositionFrequency, 'value', 0, 2, 0.001).name('uPositionFrequency')
+gui.add(uniforms.uTimeFrequency, 'value', 0, 2, 0.001).name('uTimeFrequency')
+gui.add(uniforms.uStrength, 'value', 0, 2, 0.001).name('uStrength')
+
 const sphere = new THREE.Mesh(geometry, material)
+sphere.customDepthMaterial = depthMaterial
 sphere.receiveShadow = true
 sphere.castShadow = true
 scene.add(sphere)
@@ -118,6 +154,11 @@ timer.connect(document)
 
 const tick = () => {
     timer.update()
+
+    const elapsedTime = timer.getElapsed()
+
+    // update materials
+    uniforms.uTime.value = elapsedTime
 
     controls.update()
 
