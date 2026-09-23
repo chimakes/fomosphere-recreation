@@ -26,9 +26,13 @@ const rgbeLoader = new RGBELoader()
 
 // Camera
 const camera = new THREE.PerspectiveCamera(40, sizes.width / sizes.height, 0.1, 100)
-camera.position.set(13, - 3, - 5)
-// camera.position.set(-0.48, 7.09, - 12.345)
+camera.position.set(0, 3.5, - 15)
 scene.add(camera)
+
+// // camera position debug
+// gui.add(camera.position, 'x').min(-10).max(10).step(1).name('cameraX')
+// gui.add(camera.position, 'y').min(-10).max(10).step(0.1).name('cameraY')
+// gui.add(camera.position, 'z').min(-10).max(10).step(1).name('cameraZ')
 
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
@@ -98,6 +102,9 @@ const sphere = new THREE.Mesh(geometry, material)
 sphere.customDepthMaterial = depthMaterial
 sphere.receiveShadow = true
 sphere.castShadow = true
+sphere.rotation.x = Math.PI / 2
+sphere.rotation.y = - Math.PI / 7
+sphere.rotation.z = - Math.PI / 2
 scene.add(sphere)
 
 // test plane
@@ -156,6 +163,8 @@ const tick = () => {
     timer.update()
 
     const elapsedTime = timer.getElapsed()
+
+    // console.log(camera.position)
 
     // update materials
     uniforms.uTime.value = elapsedTime
