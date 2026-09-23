@@ -53,13 +53,13 @@ renderer.setPixelRatio(sizes.pixelRatio)
  */
 const uniforms = {
     uTime: new THREE.Uniform(0),
-    uPositionFrequency: new THREE.Uniform(0.38),
+    uPositionFrequency: new THREE.Uniform(0.36),
     uTimeFrequency: new THREE.Uniform(0.4),
     uStrength: new THREE.Uniform(0.5),
 }
 
 // sphere
-let geometry = new THREE.IcosahedronGeometry(2.5, 50)
+let geometry = new THREE.IcosahedronGeometry(2.5, 200)
 geometry = mergeVertices(geometry)
 geometry.computeTangents()
 // console.log(geometry.attributes)
@@ -109,7 +109,7 @@ plane.receiveShadow = true
 plane.rotation.y = Math.PI
 plane.position.y = - 5
 plane.position.z = 5
-scene.add(plane)
+// scene.add(plane)
 
 
 
