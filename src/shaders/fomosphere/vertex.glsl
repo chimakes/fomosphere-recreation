@@ -52,7 +52,15 @@ float wave(vec3 position) {
 float getDisplacement(vec3 position)
 {
     vec3 displacementPattern = position;
-    displacementPattern += noise(displacementPattern * uPositionFrequency);
+
+    // 1. just displacement without warp
+    // displacementPattern += noise(displacementPattern * uPositionFrequency);
+
+    // 2.warp
+    vec3 noisePosition = position * uPositionFrequency;
+    displacementPattern.y += noise(noisePosition) * 2.0;
+
+
 
     return wave(displacementPattern * uStrength);
 }

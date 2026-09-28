@@ -57,9 +57,9 @@ renderer.setPixelRatio(sizes.pixelRatio)
  */
 const uniforms = {
     uTime: new THREE.Uniform(0),
-    uPositionFrequency: new THREE.Uniform(0.36),
+    uPositionFrequency: new THREE.Uniform(0.28),
     uTimeFrequency: new THREE.Uniform(0.4),
-    uStrength: new THREE.Uniform(0.5),
+    uStrength: new THREE.Uniform(0.45),
 }
 
 // sphere
@@ -103,7 +103,7 @@ sphere.customDepthMaterial = depthMaterial
 sphere.receiveShadow = true
 sphere.castShadow = true
 sphere.rotation.x = Math.PI / 2
-sphere.rotation.y = - Math.PI / 7
+sphere.rotation.y = - Math.PI / 9
 sphere.rotation.z = - Math.PI / 2
 scene.add(sphere)
 
