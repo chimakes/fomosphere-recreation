@@ -58,8 +58,10 @@ renderer.setPixelRatio(sizes.pixelRatio)
 const uniforms = {
     uTime: new THREE.Uniform(0),
     uPositionFrequency: new THREE.Uniform(0.28),
-    uTimeFrequency: new THREE.Uniform(0.4),
-    uStrength: new THREE.Uniform(0.45),
+    uTimeFrequency: new THREE.Uniform(0.0),
+    uStrength: new THREE.Uniform(0.3),
+    uTwistAmplitude: new THREE.Uniform(0.32),
+    uTwistFrequency: new THREE.Uniform(1.5)
 }
 
 // sphere
@@ -97,15 +99,28 @@ gui.add(material, 'roughness', 0, 1, 0.001)
 gui.add(uniforms.uPositionFrequency, 'value', 0, 2, 0.001).name('uPositionFrequency')
 gui.add(uniforms.uTimeFrequency, 'value', 0, 2, 0.001).name('uTimeFrequency')
 gui.add(uniforms.uStrength, 'value', 0, 2, 0.001).name('uStrength')
+gui.add(uniforms.uTwistAmplitude, 'value', -3, 3, 0.001).name('uTwistAmplitude')
+gui.add(uniforms.uTwistFrequency, 'value', -3, 3, 0.001).name('uTwistFrequency')
 
 const sphere = new THREE.Mesh(geometry, material)
 sphere.customDepthMaterial = depthMaterial
 sphere.receiveShadow = true
 sphere.castShadow = true
 sphere.rotation.x = Math.PI / 2
-sphere.rotation.y = - Math.PI / 9
+// sphere.rotation.y = - Math.PI / 9
 sphere.rotation.z = - Math.PI / 2
 scene.add(sphere)
+
+
+// // axis helper
+// // world
+// const worldAxes = new THREE.AxesHelper(3);
+// worldAxes.position.x = -7
+// scene.add(worldAxes);
+
+// // local
+// const localAxes = new THREE.AxesHelper(5);
+// sphere.add(localAxes);
 
 // test plane
 const plane = new THREE.Mesh(

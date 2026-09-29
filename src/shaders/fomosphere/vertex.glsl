@@ -2,6 +2,8 @@ uniform float uTime;
 uniform float uPositionFrequency;
 uniform float uTimeFrequency;
 uniform float uStrength;
+uniform float uTwistFrequency;
+uniform float uTwistAmplitude;
 
 attribute vec4 tangent;
 
@@ -49,12 +51,29 @@ float wave(vec3 position) {
     );
 }
 
+vec3 rotateZ(vec3 p, float angle)
+{
+    float c = cos(angle);
+    float s = sin(angle);
+
+    return vec3(
+        c * p.x - s * p.y,
+        s * p.x + c * p.y,
+        p.z
+    );
+}
+
 float getDisplacement(vec3 position)
 {
     vec3 displacementPattern = position;
 
     // 1. just displacement without warp
     // displacementPattern += noise(displacementPattern * uPositionFrequency);
+    
+    // Twist coordinates around sphere's local Z
+    float angle = sin(position.z * uTwistFrequency) * uTwistAmplitude;
+    // float angle = position.z * uTwistAmplitude;
+    displacementPattern = -rotateZ(displacementPattern, angle);
 
     // 2.warp
     vec3 noisePosition = position * uPositionFrequency;
