@@ -4,6 +4,10 @@ uniform float uTimeFrequency;
 uniform float uStrength;
 uniform float uTwistFrequency;
 uniform float uTwistAmplitude;
+uniform float uAmplitudeSpeed;
+
+uniform float uWaveMin;
+uniform float uWaveMax;
 
 attribute vec4 tangent;
 
@@ -44,8 +48,8 @@ float remap(
 float wave(vec3 position) {
     return remap(
         smoothMod((position.y += uTime * uTimeFrequency) * 2.0, 1.0, 1.5),
-        0.35,
-        0.6,
+        uWaveMin,
+        uWaveMax,
         0.0,
         1.0
     );
@@ -71,7 +75,7 @@ float getDisplacement(vec3 position)
     // displacementPattern += noise(displacementPattern * uPositionFrequency);
     
     // Twist coordinates around sphere's local Z
-    float angle = sin(position.z * uTwistFrequency) * uTwistAmplitude;
+    float angle = sin(position.z * uTwistFrequency + uTime * 2.8) * uTwistAmplitude;
     // float angle = position.z * uTwistAmplitude;
     displacementPattern = -rotateZ(displacementPattern, angle);
 

@@ -4,6 +4,7 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 import GUI from 'lil-gui'
+import gsap from 'gsap'
 import fomosphereVertexShader from './shaders/fomosphere/vertex.glsl'
 import fomosphereFragmentShader from './shaders/fomosphere/fragment.glsl'
 
@@ -57,12 +58,25 @@ renderer.setPixelRatio(sizes.pixelRatio)
  */
 const uniforms = {
     uTime: new THREE.Uniform(0),
-    uPositionFrequency: new THREE.Uniform(0.28),
+    uPositionFrequency: new THREE.Uniform(0.24),
     uTimeFrequency: new THREE.Uniform(0.0),
-    uStrength: new THREE.Uniform(0.3),
-    uTwistAmplitude: new THREE.Uniform(0.32),
-    uTwistFrequency: new THREE.Uniform(1.5)
+    uStrength: new THREE.Uniform(0.31),
+    uTwistAmplitude: new THREE.Uniform(-0.32), // -0.837
+    uTwistFrequency: new THREE.Uniform(0.5),
+    uAmplitudeSpeed: new THREE.Uniform(0.5),
+
+    uWaveMin: new THREE.Uniform(0.41),
+    uWaveMax: new THREE.Uniform(0.63),
 }
+
+// twist animation
+gsap.to(uniforms.uTwistAmplitude, {
+    value: -0.837,
+    duration: 2.5,
+    ease: 'sine.inOut',
+    yoyo: true,
+    repeat: -1,
+})
 
 // sphere
 let geometry = new THREE.IcosahedronGeometry(2.5, 200)
@@ -101,15 +115,33 @@ gui.add(uniforms.uTimeFrequency, 'value', 0, 2, 0.001).name('uTimeFrequency')
 gui.add(uniforms.uStrength, 'value', 0, 2, 0.001).name('uStrength')
 gui.add(uniforms.uTwistAmplitude, 'value', -3, 3, 0.001).name('uTwistAmplitude')
 gui.add(uniforms.uTwistFrequency, 'value', -3, 3, 0.001).name('uTwistFrequency')
+gui.add(uniforms.uAmplitudeSpeed, 'value', 0, 2, 0.01).name('uAmplitudeSpeed')
+
+gui.add(uniforms.uWaveMin, 'value')
+    .min(0)
+    .max(1)
+    .step(0.01)
+    .name('Wave Min');
+
+gui.add(uniforms.uWaveMax, 'value')
+    .min(0)
+    .max(1)
+    .step(0.01)
+    .name('Wave Max');
+
 
 const sphere = new THREE.Mesh(geometry, material)
 sphere.customDepthMaterial = depthMaterial
 sphere.receiveShadow = true
 sphere.castShadow = true
-sphere.rotation.x = Math.PI / 2
-// sphere.rotation.y = - Math.PI / 9
-sphere.rotation.z = - Math.PI / 2
+sphere.rotation.x = 2.71
+sphere.rotation.y = 0.098
+sphere.rotation.z = - 0.83
 scene.add(sphere)
+
+gui.add(sphere.rotation, 'x', -Math.PI, Math.PI, 0.01)
+gui.add(sphere.rotation, 'y', -Math.PI, Math.PI, 0.01)
+gui.add(sphere.rotation, 'z', -Math.PI, Math.PI, 0.01)
 
 
 // // axis helper
