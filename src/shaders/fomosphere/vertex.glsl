@@ -9,11 +9,26 @@ uniform float uAmplitudeSpeed;
 uniform float uWaveMin;
 uniform float uWaveMax;
 
+uniform float uColorFrequency;
+uniform float uDisplacementInfluence;
+
+uniform float uColor1Start;
+uniform float uColor1End;
+uniform float uColor2Start;
+uniform float uColor2End;
+uniform float uColor3Start;
+uniform float uColor3End;
+uniform float uColor4Start;
+uniform float uColor4End;
+
+uniform vec3 uColor[4];
+
 attribute vec4 tangent;
 
 varying float vDisplacement;
 varying vec2 vUv;
 varying vec3 vLocalNormal;
+varying vec3 vColor;
 
 #include ../includes/perlinNoise3d.glsl
 
@@ -108,7 +123,52 @@ void main()
     vec3 toA = normalize(positionA - csm_Position);
     vec3 toB = normalize(positionB - csm_Position);
     csm_Normal = cross(toA, toB);
-    
+
+
+
+    // Color
+    vColor = uColor[0];
+
+    for (int i = 1; i < 4; i++)
+    {
+        float noiseFactor = noise(csm_Position * uColorFrequency);
+        noiseFactor = noiseFactor * 0.5 + 0.5;
+
+        float displacementFactor = displacement / uStrength;
+
+        float colorFactor = mix(
+            noiseFactor,
+            displacementFactor,
+            uDisplacementInfluence
+        );
+
+        float start = uColor1Start;
+        float end = uColor1End;
+
+        if (i == 1) // pink
+        {
+            start -= uColor2Start;
+            end -= uColor2End;
+        }
+
+        if (i == 2) // purple
+        {
+            start -= uColor3Start;
+            end -= uColor3End;
+        }
+
+        if (i == 3) // yellow
+        {
+            start -= uColor4Start;
+            end -= uColor4End;
+        }
+
+        colorFactor = smoothstep(start, end, colorFactor);
+
+        vColor = mix(vColor, uColor[i], colorFactor);
+    }
+   
+
     // varyings
     vDisplacement = displacement / uStrength;
     vUv = uv;

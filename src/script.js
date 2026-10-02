@@ -47,32 +47,81 @@ const renderer = new THREE.WebGLRenderer({
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFShadowMap
 renderer.toneMapping = THREE.ACESFilmicToneMapping
-renderer.toneMappingExposure = 1
+renderer.toneMappingExposure = 0.9
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(sizes.pixelRatio)
 
-
+// gui.add(renderer, 'toneMappingExposure').min(0).max(10).step(0.001)
 
 /**
  * Fomosphere
  */
+// Color Palettes
+const debugPalette = {
+    color1: '#81d8fe',
+    color2: '#bb00ff',
+    color3: '#9514ff',
+    color4: '#e9ffc2',
+}
+let palette = [
+    new THREE.Color(debugPalette.color1),
+    new THREE.Color(debugPalette.color2),
+    new THREE.Color(debugPalette.color3),
+    new THREE.Color(debugPalette.color4),
+]
+
+// convert color to threejs color
+palette = palette.map((color) => new THREE.Color(color))
+
+palette.forEach((color, index) => {
+    const debug = {
+        color: `#${color.getHexString()}`
+    }
+
+    gui.addColor(debug, 'color').name(`Color ${index + 1}`)
+        .onChange((value) => {
+            color.set(value)
+        })
+})
+
 const uniforms = {
     uTime: new THREE.Uniform(0),
     uPositionFrequency: new THREE.Uniform(0.24),
-    uTimeFrequency: new THREE.Uniform(0.0),
+    uTimeFrequency: new THREE.Uniform(0.24),
     uStrength: new THREE.Uniform(0.31),
-    uTwistAmplitude: new THREE.Uniform(-0.32), // -0.837
+    uTwistAmplitude: new THREE.Uniform(-0.32),
     uTwistFrequency: new THREE.Uniform(0.5),
     uAmplitudeSpeed: new THREE.Uniform(0.5),
 
     uWaveMin: new THREE.Uniform(0.41),
     uWaveMax: new THREE.Uniform(0.63),
+
+    uColorFrequency: new THREE.Uniform(0.32),
+    uDisplacementInfluence: new THREE.Uniform(0.13),
+    uColor: { value: palette },
+
+    uColor1Start: { value: 0.37 },
+    uColor1End: { value: 1.0 },
+    uColor2Start: { value: 0.0 },
+    uColor2End: { value: 0.21 },
+    uColor3Start: { value: 0.15 },
+    uColor3End: { value: 0.16 },
+    uColor4Start: { value: 0.0 },
+    uColor4End: { value: 0.0 },
 }
 
 // twist animation
 gsap.to(uniforms.uTwistAmplitude, {
     value: -0.837,
     duration: 2.5,
+    ease: 'sine.inOut',
+    yoyo: true,
+    repeat: -1,
+})
+
+gsap.to(uniforms.uTwistFrequency, {
+    value: 1.575,
+    duration: 2.0,
     ease: 'sine.inOut',
     yoyo: true,
     repeat: -1,
@@ -106,9 +155,9 @@ const depthMaterial = new CustomShaderMaterial({
     depthPacking: THREE.RGBADepthPacking
 })
 
-// material tweak debug
-gui.add(material, 'metalness', 0, 1, 0.001)
-gui.add(material, 'roughness', 0, 1, 0.001)
+// // material tweak debug
+// gui.add(material, 'metalness', 0, 1, 0.001)
+// gui.add(material, 'roughness', 0, 1, 0.001)
 
 gui.add(uniforms.uPositionFrequency, 'value', 0, 2, 0.001).name('uPositionFrequency')
 gui.add(uniforms.uTimeFrequency, 'value', 0, 2, 0.001).name('uTimeFrequency')
@@ -129,6 +178,20 @@ gui.add(uniforms.uWaveMax, 'value')
     .step(0.01)
     .name('Wave Max');
 
+// color debug
+gui.add(uniforms.uColorFrequency, 'value', 0, 2, 0.01).name('uColorFrequency')
+gui.add(uniforms.uDisplacementInfluence, 'value', 0, 1, 0.01).name('uDisplacementInfluence')
+
+gui.add(uniforms.uColor1Start, 'value', 0, 1, 0.01).name('Color 1 Start')
+gui.add(uniforms.uColor1End, 'value', 0, 1, 0.01).name('Color 1 End')
+
+gui.add(uniforms.uColor2Start, 'value', 0, 1, 0.01).name('Color 2 Start')
+gui.add(uniforms.uColor2End, 'value', 0, 1, 0.01).name('Color 2 End')
+gui.add(uniforms.uColor3Start, 'value', 0, 1, 0.01).name('Color 3 Start')
+gui.add(uniforms.uColor3End, 'value', 0, 1, 0.01).name('Color 3 End')
+gui.add(uniforms.uColor4Start, 'value', 0, 1, 0.01).name('Color 4 Start')
+gui.add(uniforms.uColor4End, 'value', 0, 1, 0.01).name('Color 4 End')
+
 
 const sphere = new THREE.Mesh(geometry, material)
 sphere.customDepthMaterial = depthMaterial
@@ -139,9 +202,10 @@ sphere.rotation.y = 0.098
 sphere.rotation.z = - 0.83
 scene.add(sphere)
 
-gui.add(sphere.rotation, 'x', -Math.PI, Math.PI, 0.01)
-gui.add(sphere.rotation, 'y', -Math.PI, Math.PI, 0.01)
-gui.add(sphere.rotation, 'z', -Math.PI, Math.PI, 0.01)
+// // sphere rotation debug
+// gui.add(sphere.rotation, 'x', -Math.PI, Math.PI, 0.01)
+// gui.add(sphere.rotation, 'y', -Math.PI, Math.PI, 0.01)
+// gui.add(sphere.rotation, 'z', -Math.PI, Math.PI, 0.01)
 
 
 // // axis helper
