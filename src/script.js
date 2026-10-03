@@ -1,15 +1,12 @@
 import * as THREE from 'three'
+import Debug from './Debug.js'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
-import GUI from 'lil-gui'
 import gsap from 'gsap'
 import fomosphereVertexShader from './shaders/fomosphere/vertex.glsl'
 import fomosphereFragmentShader from './shaders/fomosphere/fragment.glsl'
-
-const gui = new GUI({ width: 340 })
-const debugObject = {}
 
 const canvas = document.querySelector('canvas.webgl')
 
@@ -30,11 +27,6 @@ const camera = new THREE.PerspectiveCamera(40, sizes.width / sizes.height, 0.1, 
 camera.position.set(0, 3.5, - 15)
 scene.add(camera)
 
-// // camera position debug
-// gui.add(camera.position, 'x').min(-10).max(10).step(1).name('cameraX')
-// gui.add(camera.position, 'y').min(-10).max(10).step(0.1).name('cameraY')
-// gui.add(camera.position, 'z').min(-10).max(10).step(1).name('cameraZ')
-
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 
@@ -50,8 +42,6 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping
 renderer.toneMappingExposure = 0.9
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(sizes.pixelRatio)
-
-// gui.add(renderer, 'toneMappingExposure').min(0).max(10).step(0.001)
 
 /**
  * Fomosphere
@@ -72,17 +62,6 @@ let palette = [
 
 // convert color to threejs color
 palette = palette.map((color) => new THREE.Color(color))
-
-palette.forEach((color, index) => {
-    const debug = {
-        color: `#${color.getHexString()}`
-    }
-
-    gui.addColor(debug, 'color').name(`Color ${index + 1}`)
-        .onChange((value) => {
-            color.set(value)
-        })
-})
 
 const uniforms = {
     uTime: new THREE.Uniform(0),
@@ -110,6 +89,9 @@ const uniforms = {
     uColor4End: { value: 0.0 },
 }
 
+new Debug(uniforms, palette)
+
+
 // twist animation
 gsap.to(uniforms.uTwistAmplitude, {
     value: -0.837,
@@ -131,7 +113,6 @@ gsap.to(uniforms.uTwistFrequency, {
 let geometry = new THREE.IcosahedronGeometry(2.5, 200)
 geometry = mergeVertices(geometry)
 geometry.computeTangents()
-// console.log(geometry.attributes)
 
 const material = new CustomShaderMaterial({
     // CSM
@@ -155,42 +136,7 @@ const depthMaterial = new CustomShaderMaterial({
     depthPacking: THREE.RGBADepthPacking
 })
 
-// // material tweak debug
-// gui.add(material, 'metalness', 0, 1, 0.001)
-// gui.add(material, 'roughness', 0, 1, 0.001)
 
-gui.add(uniforms.uPositionFrequency, 'value', 0, 2, 0.001).name('uPositionFrequency')
-gui.add(uniforms.uTimeFrequency, 'value', 0, 2, 0.001).name('uTimeFrequency')
-gui.add(uniforms.uStrength, 'value', 0, 2, 0.001).name('uStrength')
-gui.add(uniforms.uTwistAmplitude, 'value', -3, 3, 0.001).name('uTwistAmplitude')
-gui.add(uniforms.uTwistFrequency, 'value', -3, 3, 0.001).name('uTwistFrequency')
-gui.add(uniforms.uAmplitudeSpeed, 'value', 0, 2, 0.01).name('uAmplitudeSpeed')
-
-gui.add(uniforms.uWaveMin, 'value')
-    .min(0)
-    .max(1)
-    .step(0.01)
-    .name('Wave Min');
-
-gui.add(uniforms.uWaveMax, 'value')
-    .min(0)
-    .max(1)
-    .step(0.01)
-    .name('Wave Max');
-
-// color debug
-gui.add(uniforms.uColorFrequency, 'value', 0, 2, 0.01).name('uColorFrequency')
-gui.add(uniforms.uDisplacementInfluence, 'value', 0, 1, 0.01).name('uDisplacementInfluence')
-
-gui.add(uniforms.uColor1Start, 'value', 0, 1, 0.01).name('Color 1 Start')
-gui.add(uniforms.uColor1End, 'value', 0, 1, 0.01).name('Color 1 End')
-
-gui.add(uniforms.uColor2Start, 'value', 0, 1, 0.01).name('Color 2 Start')
-gui.add(uniforms.uColor2End, 'value', 0, 1, 0.01).name('Color 2 End')
-gui.add(uniforms.uColor3Start, 'value', 0, 1, 0.01).name('Color 3 Start')
-gui.add(uniforms.uColor3End, 'value', 0, 1, 0.01).name('Color 3 End')
-gui.add(uniforms.uColor4Start, 'value', 0, 1, 0.01).name('Color 4 Start')
-gui.add(uniforms.uColor4End, 'value', 0, 1, 0.01).name('Color 4 End')
 
 
 const sphere = new THREE.Mesh(geometry, material)
@@ -201,35 +147,6 @@ sphere.rotation.x = 2.71
 sphere.rotation.y = 0.098
 sphere.rotation.z = - 0.83
 scene.add(sphere)
-
-// // sphere rotation debug
-// gui.add(sphere.rotation, 'x', -Math.PI, Math.PI, 0.01)
-// gui.add(sphere.rotation, 'y', -Math.PI, Math.PI, 0.01)
-// gui.add(sphere.rotation, 'z', -Math.PI, Math.PI, 0.01)
-
-
-// // axis helper
-// // world
-// const worldAxes = new THREE.AxesHelper(3);
-// worldAxes.position.x = -7
-// scene.add(worldAxes);
-
-// // local
-// const localAxes = new THREE.AxesHelper(5);
-// sphere.add(localAxes);
-
-// test plane
-const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(15, 15, 15),
-    new THREE.MeshStandardMaterial()
-)
-plane.receiveShadow = true
-plane.rotation.y = Math.PI
-plane.position.y = - 5
-plane.position.z = 5
-// scene.add(plane)
-
-
 
 
 
@@ -274,8 +191,6 @@ const tick = () => {
     timer.update()
 
     const elapsedTime = timer.getElapsed()
-
-    // console.log(camera.position)
 
     // update materials
     uniforms.uTime.value = elapsedTime

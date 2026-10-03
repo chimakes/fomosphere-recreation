@@ -25,9 +25,6 @@ uniform vec3 uColor[4];
 
 attribute vec4 tangent;
 
-varying float vDisplacement;
-varying vec2 vUv;
-varying vec3 vLocalNormal;
 varying vec3 vColor;
 
 #include ../includes/perlinNoise3d.glsl
@@ -85,16 +82,12 @@ vec3 rotateZ(vec3 p, float angle)
 float getDisplacement(vec3 position)
 {
     vec3 displacementPattern = position;
-
-    // 1. just displacement without warp
-    // displacementPattern += noise(displacementPattern * uPositionFrequency);
     
-    // Twist coordinates around sphere's local Z
+    // for twisting along z axis
     float angle = sin(position.z * uTwistFrequency + uTime * 2.8) * uTwistAmplitude;
-    // float angle = position.z * uTwistAmplitude;
     displacementPattern = -rotateZ(displacementPattern, angle);
 
-    // 2.warp
+    // warp
     vec3 noisePosition = position * uPositionFrequency;
     displacementPattern.y += noise(noisePosition) * 2.0;
 
@@ -167,10 +160,4 @@ void main()
 
         vColor = mix(vColor, uColor[i], colorFactor);
     }
-   
-
-    // varyings
-    vDisplacement = displacement / uStrength;
-    vUv = uv;
-    vLocalNormal = normal;
 }
