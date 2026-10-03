@@ -12,8 +12,8 @@ This project is a recreation of 14islands' blobmixer,
 created as part of my shader learning journey.
 
 ## License
-❌ Commercial use is prohibited.
-❌ Redistribution of the source code is prohibited.
-❌ Incorporating the entire source code into another project is prohibited.
-✅ You may view and study the application.
-✅ You may use individual code snippets in your own projects.
+❌ Commercial use is prohibited.<br>
+❌ Redistribution of the source code is prohibited.<br>
+❌ Incorporating the entire source code into another project is prohibited.<br>
+✅ You may view and study the application.<br>
+✅ You may use individual code snippets in your own projects.<br>
